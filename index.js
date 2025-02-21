@@ -3,33 +3,37 @@ const multer = require('multer');
 const vision = require('@google-cloud/vision');
 const path = require('path');
 const fs = require('fs');
+const cors = require('cors'); // Import CORS
 
-// Create a client with your Google Vision credentials
+// Initialize the Vision client with credentials from environment variable
 const client = new vision.ImageAnnotatorClient({
   keyFilename: path.join(__dirname, 'astral-depth-450819-a7-d1ed844dbe30.json') // Path to your local API key
 });
 
 const app = express();
-const upload = multer({ dest: 'uploads/' }); // Save uploaded images to 'uploads' folder
+const upload = multer({ dest: 'uploads/' });
+
+// Use CORS middleware to allow requests from any origin
+app.use(cors()); // This will allow all domains to make requests to your server
 
 // Serve the HTML form when visiting the root
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html')); // Serve the HTML form
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Handle image upload and Google Vision API call
+// Handle image upload and Vision API call
 app.post('/upload', upload.single('image'), async (req, res) => {
   try {
-    const filePath = req.file.path; // Path to the uploaded image
+    const filePath = req.file.path; // Path to uploaded image
 
-    // Call Google Vision API for text detection (OCR)
+    // Call Vision API for text detection
     const [result] = await client.textDetection(filePath);
     const detections = result.textAnnotations;
 
-    // Clean up the uploaded image file
-    fs.unlinkSync(filePath); // Remove the temporary file
+    // Clean up uploaded file
+    fs.unlinkSync(filePath);
 
-    // Respond with the detected text as JSON
+    // Return detected text as JSON
     res.json({ text: detections.map(text => text.description).join('\n') });
   } catch (error) {
     console.error('Error:', error);
