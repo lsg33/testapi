@@ -6,7 +6,7 @@ const fs = require('fs');
 
 // Create a client with your Google Vision credentials
 const client = new vision.ImageAnnotatorClient({
-  keyFilename: path.join(__dirname, 'monkey.json') // Path to your local API key
+  keyFilename: path.join(__dirname, 'astral-depth-450819-a7-d1ed844dbe30.json') // Path to your local API key
 });
 
 const app = express();
