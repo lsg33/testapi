@@ -16,10 +16,6 @@ const upload = multer({ dest: 'uploads/' });
 // Use CORS middleware to allow requests from any origin
 app.use(cors()); // This will allow all domains to make requests to your server
 
-// Serve the HTML form when visiting the root
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
 
 // Handle image upload and Vision API call
 app.post('/upload', upload.single('image'), async (req, res) => {
@@ -42,7 +38,7 @@ app.post('/upload', upload.single('image'), async (req, res) => {
 });
 
 // Start the server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000; // Default to 3000 if PORT is not set
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
