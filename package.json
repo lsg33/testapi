@@ -1,16 +1,18 @@
 {
-  "name": "express-mongo-app",
+  "name": "express-mongo-api",
   "version": "1.0.0",
-  "description": "An Express app connected to MongoDB with user and product routes.",
+  "description": "An Express app connected to MongoDB with user authentication routes.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "mongoose": "^5.13.8"
+    "mongoose": "^5.13.8",
+    "body-parser": "^1.19.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
