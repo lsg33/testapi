@@ -65,6 +65,44 @@ app.post('/login', async (req, res) => {
   }
 });
 
+app.get('/', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>API Access</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f4;
+          color: #333;
+          text-align: center;
+          padding-top: 50px;
+        }
+        h1 {
+          color: #e74c3c;
+        }
+        p {
+          color: #2c3e50;
+        }
+      </style>
+    </head>
+    <body>
+      <h1>Sorry, this is the API!</h1>
+      <p>You are being redirected to the sign-up page...</p>
+      <script>
+        setTimeout(() => {
+          window.location.href = '/sign-up'; // Redirect to the sign-up page
+        }, 3000); // Redirect after 3 seconds
+      </script>
+    </body>
+    </html>
+  `);
+});
+
+
 // Start Server
 app.listen(3000, () => {
   console.log('Server is running on http://localhost:3000');
