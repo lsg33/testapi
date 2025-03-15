@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
   password: String
 });
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema, 'users');
 
 // Registration Route (Existing)
 app.post('/register', async (req, res) => {
