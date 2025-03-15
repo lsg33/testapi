@@ -101,7 +101,7 @@ app.get('/', (req, res) => {
       <p>You are being redirected to the sign-up page...</p>
       <script>
         setTimeout(() => {
-          window.location.href = '/sign-up'; // Redirect to the sign-up page
+          window.location.href = 'https://lsg33.github.io/LSUG/register/'; // Redirect to the sign-up page
         }, 3000); // Redirect after 3 seconds
       </script>
     </body>
