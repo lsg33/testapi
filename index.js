@@ -1,44 +1,71 @@
 const express = require('express');
-const multer = require('multer');
-const vision = require('@google-cloud/vision');
-const path = require('path');
-const fs = require('fs');
-const cors = require('cors'); // Import CORS
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const bcrypt = require('bcryptjs');
 
-// Initialize the Vision client with credentials from environment variable
-const client = new vision.ImageAnnotatorClient({
-  keyFilename: path.join(__dirname, 'astral-depth-450819-a7-d1ed844dbe30.json') // Path to your local API key
+// Initialize Express
+const app = express();
+
+// Middleware
+app.use(bodyParser.json());
+
+// MongoDB Connection
+mongoose.connect('mongodb+srv://forcesspecial801:oCqg7zZg0MA95I5b@cluster777.atoevuq.mongodb.net/cluster777', { useNewUrlParser: true, useUnifiedTopology: true });
+
+// User Schema
+const userSchema = new mongoose.Schema({
+  firstName: String,
+  lastName: String,
+  email: { type: String, unique: true },
+  password: String
 });
 
-const app = express();
-const upload = multer({ dest: 'uploads/' });
+const User = mongoose.model('User', userSchema);
 
-// Use CORS middleware to allow requests from any origin
-app.use(cors()); // This will allow all domains to make requests to your server
+// Registration Route (Existing)
+app.post('/register', async (req, res) => {
+  const { firstName, lastName, email, password } = req.body;
 
+  // Check if email ends with '@certaindomail.com'
+  if (!email.endsWith('@jccschools.net')) {
+    return res.status(400).json({ success: false, message: 'Sorry, your email must end with @jccschools.net' });
+  }
 
-// Handle image upload and Vision API call
-app.post('/upload', upload.single('image'), async (req, res) => {
   try {
-    const filePath = req.file.path; // Path to uploaded image
-
-    // Call Vision API for text detection
-    const [result] = await client.textDetection(filePath);
-    const detections = result.textAnnotations;
-
-    // Clean up uploaded file
-    fs.unlinkSync(filePath);
-
-    // Return detected text as JSON
-    res.json({ text: detections.map(text => text.description).join('\n') });
+    const hashedPassword = await bcrypt.hash(password, 10); // Hash the password before saving
+    const newUser = new User({ firstName, lastName, email, password: hashedPassword });
+    await newUser.save();
+    res.json({ success: true });
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'An error occurred while processing the image.' });
+    // Handle errors (e.g., duplicate email)
+    res.status(400).json({ success: false, message: 'Email already exists or invalid data.' });
   }
 });
 
-// Start the server
-const PORT = process.env.PORT || 3000; // Default to 3000 if PORT is not set
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+// Login Route
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ success: false, message: 'Email not found' });
+    }
+
+    // Check password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ success: false, message: 'Invalid password' });
+    }
+
+    // Successful login
+    res.json({ success: true, message: 'Login successful!' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Start Server
+app.listen(3000, () => {
+  console.log('Server is running on http://localhost:3000');
 });
