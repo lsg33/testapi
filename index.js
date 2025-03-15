@@ -111,6 +111,6 @@ app.get('/', (req, res) => {
 
 
 // Start Server
-app.listen(3000, () => {
-  console.log('Server is running on http://localhost:3000');
+app.listen(8080, () => {
+  console.log('Server is running on https://lsg33.github.io/LSUG/:8080');
 });
