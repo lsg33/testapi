@@ -2,9 +2,16 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
+const cors = require('cors'); 
 
 // Initialize Express
 const app = express();
+
+
+
+app.use(cors({
+  origin: 'https://lsg33.github.io/LSUG', 
+}));
 
 // Middleware
 app.use(bodyParser.json());
