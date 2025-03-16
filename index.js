@@ -24,7 +24,8 @@ const userSchema = new mongoose.Schema({
   lastName: String,
   email: { type: String, unique: true },
   password: String,
-  AI: { type: Boolean, default: false }  // New AI field
+  AI: { type: Boolean, default: false },  // New AI field
+  banned: { type: Boolean, default: false }  // New banned field
 });
 
 const User = mongoose.model('User', userSchema, 'users');
@@ -57,6 +58,10 @@ app.post('/login', async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ success: false, message: 'Email not found' });
+    }
+
+    if (user.banned) {
+      return res.status(400).json({ success: false, message: 'Your account is banned' });
     }
 
     // Check password
@@ -94,6 +99,24 @@ app.post('/checkAI', async (req, res) => {
   }
 });
 
+app.post('/ban', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ success: false, message: 'User not found' });
+    }
+
+    // Ban the user
+    user.banned = true;
+    await user.save();
+
+    res.json({ success: true, message: `User ${email} has been banned` });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
 // Default route
 app.get('/', (req, res) => {
   res.send(`
