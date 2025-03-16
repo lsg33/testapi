@@ -7,10 +7,9 @@ const cors = require('cors');
 // Initialize Express
 const app = express();
 
-
-
+// CORS configuration for testing (allowing all origins)
 app.use(cors({
-  origin: '*', // Allow all origins for testing
+  origin: '*',
 }));
 
 // Middleware
@@ -19,12 +18,13 @@ app.use(bodyParser.json());
 // MongoDB Connection
 mongoose.connect('mongodb+srv://forcesspecial801:oCqg7zZg0MA95I5b@cluster777.atoevuq.mongodb.net/cluster777', { useNewUrlParser: true, useUnifiedTopology: true });
 
-// User Schema
+// User Schema with AI field
 const userSchema = new mongoose.Schema({
   firstName: String,
   lastName: String,
   email: { type: String, unique: true },
-  password: String
+  password: String,
+  AI: { type: Boolean, default: false }  // New AI field
 });
 
 const User = mongoose.model('User', userSchema, 'users');
@@ -72,6 +72,29 @@ app.post('/login', async (req, res) => {
   }
 });
 
+// Check if user has AI access
+app.post('/checkAI', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: 'User not found' });
+    }
+
+    // Check if the AI field is true
+    if (user.AI) {
+      return res.json({ AI: true });
+    } else {
+      return res.json({ AI: false });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Default route
 app.get('/', (req, res) => {
   res.send(`
     <!DOCTYPE html>
@@ -108,7 +131,6 @@ app.get('/', (req, res) => {
     </html>
   `);
 });
-
 
 // Start Server
 app.listen(8080, () => {
