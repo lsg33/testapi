@@ -41,7 +41,7 @@ app.post('/register', async (req, res) => {
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10); // Hash the password before saving
-    const newUser = new User({ firstName, lastName, email, password: hashedPassword });
+    const newUser = new User({ firstName, lastName, email, password: hashedPassword, AI: false, banned: false });
     await newUser.save();
     res.json({ success: true });
   } catch (error) {
